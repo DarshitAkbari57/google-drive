@@ -10,7 +10,14 @@ const app = express();
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+app.use(cors({ origin: 'https://google-drive-mjmy.vercel.app', credentials: true }));
+
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path) => {
+    res.setHeader('Content-Type', 'application/octet-stream');  // Or a specific content type based on file type
+    res.setHeader('Content-Disposition', 'inline');  // Display in browser, not download
+  },
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/files', fileRoutes);
