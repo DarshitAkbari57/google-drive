@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: file-uploader-app
+    runtime: node
+    buildCommand: npm install
+    startCommand: node index.js
+    plan: starter
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://Digital:5RsijWJAOxBgupva@cluster0.qibba6k.mongodb.net/filemanager
+      - key: JWT_SECRET
+        value: your_super_secret_key
+    disk:
+      name: uploads
+      mountPath: /uploads
+      sizeGB: 1
