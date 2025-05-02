@@ -29,10 +29,12 @@ app.use('/uploads', express.static('uploads', {
       res.setHeader('Content-Type', 'image/' + extname);
     } else if (extname === 'txt') {
       res.setHeader('Content-Type', 'text/plain');
+    } else if (extname === 'js' || extname === 'jsx') {
+      res.setHeader('Content-Type', 'application/javascript');
     } else {
       res.setHeader('Content-Type', 'application/octet-stream');
     }
-    res.setHeader('Content-Disposition', 'inline');  // Ensure inline display, not download
+    res.setHeader('Content-Disposition', 'inline');
   },
 }));
 
