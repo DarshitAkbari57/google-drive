@@ -1,0 +1,377 @@
+{
+	"info": {
+		"_postman_id": "47e0cc83-9fad-4234-aa02-f8b417457df2",
+		"name": "Auth & File Management API",
+		"description": "Collection for Authentication and File Management API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26005296",
+		"_collection_link": "https://galactic-escape-527582.postman.co/workspace/My-Workspace~becd8d6a-b799-4cb1-8137-ba85ef486793/collection/26005296-47e0cc83-9fad-4234-aa02-f8b417457df2?action=share&source=collection_link&creator=26005296"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{local_url}}/api/auth/login",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{local_url}}/api/auth/signup",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log Out",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{local_url}}/api/auth/logout",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "File Management",
+			"item": [
+				{
+					"name": "Create Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Folder\",\n    \"parentId\": \"681316987100676480553e0d\"\n}"
+						},
+						"url": {
+							"raw": "{{local_url}}/api/files/create-folder",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"create-folder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload File",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1efb60cb-e53c-4b00-9427-8e9708fa1e1c"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local_url}}/api/files/upload",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get File Structure",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{local_url}}/api/files/structure",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"structure"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rename File/Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"newName\": \"Renamed Folder\"\n}"
+						},
+						"url": {
+							"raw": "{{local_url}}/api/files/rename/681302061cc602efd7ae09c8",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"rename",
+								"681302061cc602efd7ae09c8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete File/Folder",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{local_url}}/api/files/delete/68130440b308e28a5402817b",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"delete",
+								"68130440b308e28a5402817b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Preview File",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local_url}}/api/files/preview/681302061cc602efd7ae09c8",
+							"host": [
+								"{{local_url}}"
+							],
+							"path": [
+								"api",
+								"files",
+								"preview",
+								"681302061cc602efd7ae09c8"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTJmZjQyN2M5YjQzMDA4MTUyNDlhOCIsImlhdCI6MTc0NjA3NTQ5OCwiZXhwIjoxNzQ2MTYxODk4fQ.XSB2tZ1E7rZ4uqdZQAUbFnLiQb8MRhAWnmkarncl22g",
+			"type": "string"
+		}
+	]
+}
