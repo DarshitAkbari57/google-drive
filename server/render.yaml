@@ -7,7 +7,7 @@ services:
     plan: starter
     envVars:
       - key: MONGO_URI
-        value: mongodb+srv://Digital:5RsijWJAOxBgupva@cluster0.qibba6k.mongodb.net/filemanager
+        value: mongo_url
       - key: JWT_SECRET
         value: your_super_secret_key
     disk:
