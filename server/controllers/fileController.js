@@ -137,7 +137,7 @@ exports.previewFile = async (req, res) => {
         res.json({
             name: item.name,
             type: item.type,
-            url: `${req.protocol}://${req.get('host')}/${item.url}`
+            url: `https://${req.get('host')}/${item.url}`
         });
     } catch (err) {
         res.status(500).json({ message: 'Error previewing file', error: err.message });
