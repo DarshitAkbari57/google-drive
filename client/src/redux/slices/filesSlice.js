@@ -24,7 +24,7 @@ export const deleteFile = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const response = await apiDelete(`/files/delete/${id}`);
-      generatePopup("success", response?.message);
+      // generatePopup("success", response?.message);
       return { id, message: response?.message || "Deleted successfully" };
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -39,7 +39,7 @@ export const renameFile = createAsyncThunk(
   async ({ id, newName }, thunkAPI) => {
     try {
       const response = await apiPut(`/files/rename/${id}`, { newName });
-      generatePopup("success", response?.message);
+      // generatePopup("success", response?.message);
       return {
         id,
         newName,

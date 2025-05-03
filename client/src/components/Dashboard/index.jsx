@@ -26,14 +26,22 @@ import { uploadFile } from "@/redux/thunks/uploadFile";
 import { createFolder as createFolderThunk } from "@/redux/thunks/createFolder";
 import { getPreview } from "@/redux/thunks/getPreview";
 import { generatePopup } from "@/utils/toast";
+import { GlobalLoader } from "../ui/GlobalLoader";
 
-const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
+const ConfirmDialog = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  loading,
+}) => {
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onClose} // Add onClick to close the modal when the backdrop is clicked
+      onClick={() => !loading && onClose()} // Add onClick to close the modal when the backdrop is clicked
     >
       {/* Modal without overlay */}
       <div
@@ -45,6 +53,7 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
           type="button"
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
           onClick={onClose}
+          disabled={loading}
         >
           <X className="w-5 h-5" />
         </button>
@@ -61,18 +70,17 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button
             className="bg-red-500"
             variant="destructive"
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            onClick={onConfirm}
+            isLoading={loading}
+            disabled={loading}
           >
-            Delete
+            {loading ? "Deleting..." : "Delete"}
           </Button>
         </div>
       </div>
@@ -80,7 +88,14 @@ const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message }) => {
   );
 };
 
-const RenameModelDialog = ({ isOpen, onClose, onSubmit, title, data }) => {
+const RenameModelDialog = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  data,
+  loading,
+}) => {
   const [newName, setNewName] = useState(""); // Always initialize state at the top
 
   useEffect(() => {
@@ -93,8 +108,8 @@ const RenameModelDialog = ({ isOpen, onClose, onSubmit, title, data }) => {
 
   const handleSubmit = () => {
     onSubmit(newName);
-    onClose();
-    setNewName(""); // Clear the input state after submit
+    // onClose();
+    // setNewName(""); // Clear the input state after submit
   };
 
   const handleCancel = () => {
@@ -104,7 +119,7 @@ const RenameModelDialog = ({ isOpen, onClose, onSubmit, title, data }) => {
 
   return (
     <div
-      onClick={onClose}
+      onClick={() => !loading && onClose()}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
       <div
@@ -116,6 +131,7 @@ const RenameModelDialog = ({ isOpen, onClose, onSubmit, title, data }) => {
           type="button"
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
           onClick={handleCancel}
+          disabled={loading}
         >
           <X className="w-5 h-5" />
         </button>
@@ -136,11 +152,15 @@ const RenameModelDialog = ({ isOpen, onClose, onSubmit, title, data }) => {
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={handleCancel}>
+          <Button variant="outline" onClick={handleCancel} disabled={loading}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!newName.trim()}>
-            Submit
+          <Button
+            onClick={handleSubmit}
+            disabled={!newName.trim() || loading}
+            isLoading={loading}
+          >
+            {loading ? "Renaming..." : "Submit"}
           </Button>
         </div>
       </div>
@@ -148,14 +168,14 @@ const RenameModelDialog = ({ isOpen, onClose, onSubmit, title, data }) => {
   );
 };
 
-const CreateFolderModal = ({ isOpen, onClose, onSubmit }) => {
+const CreateFolderModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const [folderName, setFolderName] = useState("");
 
   const handleSubmit = () => {
     if (folderName.trim()) {
       onSubmit(folderName.trim());
-      setFolderName("");
-      onClose();
+      // setFolderName("");
+      // onClose();
     }
   };
 
@@ -164,15 +184,28 @@ const CreateFolderModal = ({ isOpen, onClose, onSubmit }) => {
     onClose();
   };
 
+  useEffect(() => {
+    if (!isOpen) {
+      setFolderName(""); // Clear input when modal closes
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="relative z-10 w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6">
+    <div
+      onClick={() => !loading && onClose()}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 w-full max-w-md mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6"
+      >
         <button
           type="button"
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
           onClick={handleCancel}
+          disabled={loading}
         >
           <X className="w-5 h-5" />
         </button>
@@ -190,11 +223,15 @@ const CreateFolderModal = ({ isOpen, onClose, onSubmit }) => {
         />
 
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={handleCancel}>
+          <Button variant="outline" onClick={handleCancel} disabled={loading}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!folderName.trim()}>
-            Create
+          <Button
+            onClick={handleSubmit}
+            disabled={!folderName.trim() || loading}
+            isLoading={loading}
+          >
+            {loading ? "Creating..." : "Create"}
           </Button>
         </div>
       </div>
@@ -202,7 +239,7 @@ const CreateFolderModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-const PreviewModal = ({ isOpen, onClose, file }) => {
+const PreviewModal = ({ isOpen, onClose, file, loading }) => {
   if (!isOpen || !file) return null;
 
   const previewUrl = file.url?.replace(/\\/g, "/") || ""; // Sanitize URL
@@ -238,7 +275,11 @@ const PreviewModal = ({ isOpen, onClose, file }) => {
           Preview: {fileName}
         </h2>
 
-        {isImage ? (
+        {loading ? (
+          <div className="flex items-center justify-center h-40 bg-gray-50 dark:bg-gray-900">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+          </div>
+        ) : isImage ? (
           <img
             src={previewUrl}
             alt={fileName}
@@ -278,23 +319,32 @@ const Dashboard = () => {
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [previewFile, setPreviewFile] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [files, setFiles] = useState();
+  const [createLoading, setCreateLoading] = useState(false);
+  const [renameLoading, setRenameLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const { data, loading, error } = useSelector((state) => state.files);
+  const url = process.env.NEXT_PUBLIC_PREVIEW_URL;
 
   const handleFilesUpload = (uploadedFiles) => {
     if (!uploadedFiles || uploadedFiles.length === 0) return;
 
+    setUploadLoading(true);
+
     uploadedFiles.forEach((file) => {
       if (file.size > 2 * 1024 * 1024) {
         generatePopup("info", `File size exceeds the 2MB limit: ${file.name}`);
+        setUploadLoading(false);
         return;
       }
 
       dispatch(uploadFile({ file, id: currentFolder || null }))
         .unwrap()
-        .then((res) => {
-          if (res.newFile) {
-            generatePopup("success", res?.message);
+        .then((resp) => {
+          if (resp.newFile) {
             dispatch(getFileStructure()).then((res) => {
               const updatedStructure = res.payload?.data;
               if (currentFolder) {
@@ -303,11 +353,15 @@ const Dashboard = () => {
               } else {
                 setFiles(updatedStructure);
               }
+              generatePopup("success", resp?.message);
             });
           }
         })
         .catch((err) => {
           console.error("Upload error:", err);
+        })
+        .finally(() => {
+          setUploadLoading(false); // Stop loading once the API call finishes
         });
     });
   };
@@ -322,9 +376,8 @@ const Dashboard = () => {
     }
   }, [data]);
 
-  const [files, setFiles] = useState();
-
   const createFolder = async (folderName) => {
+    setCreateLoading(true);
     try {
       const result = await dispatch(
         createFolderThunk({ name: folderName, parentId: currentFolder })
@@ -340,11 +393,16 @@ const Dashboard = () => {
         } else {
           setFiles(updatedStructure.data);
         }
+
+        generatePopup("success", result?.payload?.message);
+        setIsCreateFolderOpen(false);
       } else {
         console.error("Folder creation failed:", result.payload);
       }
     } catch (error) {
       console.error("Unexpected error:", error);
+    } finally {
+      setCreateLoading(false);
     }
   };
 
@@ -354,6 +412,7 @@ const Dashboard = () => {
   };
 
   const confirmRename = async (name) => {
+    setRenameLoading(true);
     try {
       const resultAction = await dispatch(
         renameFile({ id: itemToRename?._id, newName: name })
@@ -369,11 +428,15 @@ const Dashboard = () => {
         } else {
           setFiles(updatedStructure.data);
         }
+        generatePopup("success", resultAction?.payload?.message);
+        setIsRenameOpen(false);
       } else {
         console.error("Rename failed:", resultAction.payload);
       }
     } catch (err) {
       console.error("Unexpected error during rename:", err);
+    } finally {
+      setRenameLoading(false);
     }
   };
 
@@ -383,12 +446,11 @@ const Dashboard = () => {
   };
 
   const confirmDelete = async () => {
+    setDeleteLoading(true);
     try {
       const resultAction = await dispatch(deleteFile(itemToDelete));
 
       if (deleteFile.fulfilled.match(resultAction)) {
-        generatePopup("success", resultAction?.payload);
-
         const updatedStructure = await dispatch(getFileStructure()).unwrap();
 
         if (currentFolder) {
@@ -397,11 +459,15 @@ const Dashboard = () => {
         } else {
           setFiles(updatedStructure.data);
         }
+        generatePopup("success", resultAction?.payload?.message);
+        setIsConfirmOpen(false);
       } else {
         console.error("Delete failed:", resultAction.payload);
       }
     } catch (err) {
       console.error("Unexpected error during deletion:", err);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -448,6 +514,7 @@ const Dashboard = () => {
   };
 
   const handleFilePreview = async (id) => {
+    setIsPreviewLoading(true);
     try {
       const result = await dispatch(getPreview(id)).unwrap();
 
@@ -459,6 +526,8 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching preview:", error);
+    } finally {
+      setIsPreviewLoading(false); // Stop loading
     }
   };
 
@@ -511,30 +580,35 @@ const Dashboard = () => {
 
   return (
     <>
+      <GlobalLoader loading={uploadLoading || isPreviewLoading} />
       <div className="min-h-full">
         <ConfirmDialog
           isOpen={isConfirmOpen}
-          onClose={() => setIsConfirmOpen(false)}
+          onClose={() => !deleteLoading && setIsConfirmOpen(false)}
           onConfirm={confirmDelete}
           title="Delete Item"
           message="Are you sure you want to delete this item? This action cannot be undone."
+          loading={deleteLoading}
         />
         <RenameModelDialog
           isOpen={isRenameOpen}
-          onClose={() => setIsRenameOpen(false)}
+          onClose={() => !renameLoading && setIsRenameOpen(false)}
           onSubmit={confirmRename}
           title="Rename"
           data={itemToRename}
+          loading={renameLoading}
         />
         <CreateFolderModal
           isOpen={isCreateFolderOpen}
-          onClose={() => setIsCreateFolderOpen(false)}
+          onClose={() => !createLoading && setIsCreateFolderOpen(false)}
           onSubmit={createFolder}
+          loading={createLoading}
         />
         <PreviewModal
           isOpen={isPreviewOpen}
           onClose={() => setIsPreviewOpen(false)}
           file={previewFile}
+          loading={isPreviewLoading}
         />
         {/* Main content */}
         <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -627,7 +701,7 @@ const Dashboard = () => {
                         <Folder className="h-16 w-16 text-blue-500 mb-3" />
                       ) : item.url ? (
                         <img
-                          src={`http://localhost:5000/${item.url}`}
+                          src={`${url}/${item.url}`}
                           alt={item.name}
                           onError={(e) => {
                             e.target.onerror = null;
@@ -674,7 +748,9 @@ const Dashboard = () => {
                         key={item._id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
                         onDoubleClick={() =>
-                          item.type === "folder" && handleOpenFolder(item._id)
+                          item.type === "folder"
+                            ? handleOpenFolder(item._id)
+                            : handleFilePreview(item._id)
                         }
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -683,7 +759,7 @@ const Dashboard = () => {
                               <Folder className="h-5 w-5 text-blue-500 mr-3" />
                             ) : item.url ? (
                               <img
-                                src={`http://localhost:5000/${item.url}`}
+                                src={`${url}/${item.url}`}
                                 alt={item.name}
                                 onError={(e) => {
                                   e.target.onerror = null;
